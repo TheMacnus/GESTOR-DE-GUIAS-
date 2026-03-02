@@ -26,7 +26,7 @@ if (isset($_GET['msg'])) {
 ?>
 
 <div class="container">
-    <h1>Gestor de Guías - Coordinadora Trinidad</h1>
+    <h1>Gestor de Guías - Coordinadora</h1>
 
     <!-- MENÚ CRUD -->
     <div class="menu">
@@ -353,29 +353,43 @@ if (isset($_GET['msg'])) {
     </div>
     <?php } ?>
 
-   <!-- ============================================= -->
-<!-- TABLA DE RESULTADOS - VERSIÓN LEGIBLE EN PANTALLA -->
+<!-- ============================================= -->
+<!-- TABLA DE RESULTADOS CON CHECKBOXES -->
 <!-- ============================================= -->
 <?php if (!empty($resultados)) { ?>
 <div class="tabla-container">
-    <h3>📋 Resultados de Búsqueda</h3>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+        <h3 style="margin: 0;">📋 Resultados de Búsqueda</h3>
+        <div>
+            <button type="button" onclick="seleccionarTodas()" class="btn btn-secondary" style="margin-right: 5px;">✓ Todas</button>
+            <button type="button" onclick="deseleccionarTodas()" class="btn btn-secondary" style="margin-right: 5px;">✗ Ninguna</button>
+            <span style="margin-left: 10px; font-size: 13px; color: #666;" id="contadorSeleccionadas">0 seleccionadas</span>
+        </div>
+    </div>
+    
     <div style="overflow-x: auto;">
-        <table class="tabla-guias" style="min-width: 100%; font-size: 14px; border-collapse: collapse;">
+        <table class="tabla-guias" id="tablaResultados" style="min-width: 100%; font-size: 14px; border-collapse: collapse;">
             <thead>
                 <tr>
-                    <th style="font-size: 18px; padding: 10px 8px;">Guía</th>
-                    <th style="font-size: 18px; padding: 10px 8px;">Suc.</th>
-                    <th style="font-size: 18px; padding: 10px 8px;">Destinatario</th>
-                    <th style="font-size: 18px; padding: 10px 8px;">Estado</th>
-                    <th style="font-size: 18px; padding: 10px 8px;">Pago</th>
-                    <th style="font-size: 18px; padding: 10px 8px;">Valor</th>
-                    <th style="font-size: 18px; padding: 10px 8px;">Paq.</th>
-                    <th style="font-size: 18px; padding: 10px 8px;">Fecha</th>
+                    <th style="width: 30px; font-size: 14px; padding: 10px 5px; text-align: center;">
+                        <input type="checkbox" id="checkTodo" onclick="toggleTodo()" style="transform: scale(1.2);">
+                    </th>
+                    <th style="font-size: 14px; padding: 10px 8px;">Guía</th>
+                    <th style="font-size: 14px; padding: 10px 8px;">Suc.</th>
+                    <th style="font-size: 14px; padding: 10px 8px;">Destinatario</th>
+                    <th style="font-size: 14px; padding: 10px 8px;">Estado</th>
+                    <th style="font-size: 14px; padding: 10px 8px;">Pago</th>
+                    <th style="font-size: 14px; padding: 10px 8px;">Valor</th>
+                    <th style="font-size: 14px; padding: 10px 8px;">Paq.</th>
+                    <th style="font-size: 14px; padding: 10px 8px;">Fecha</th>
                 </tr>
             </thead>
             <tbody>
                 <?php foreach ($resultados as $g) { ?>
                 <tr>
+                    <td style="text-align: center; padding: 8px 5px;">
+                        <input type="checkbox" class="seleccionar-guia" value="<?= htmlspecialchars($g['numero_guia']) ?>" style="transform: scale(1.2);">
+                    </td>
                     <td style="font-family: monospace; font-size: 13px; padding: 8px 8px; white-space: nowrap;"><?= htmlspecialchars($g['numero_guia']) ?></td>
                     <td style="text-align: center; font-size: 13px; padding: 8px 8px;"><?= htmlspecialchars(substr($g['sucursal'], 0, 8)) ?></td>
                     <td style="max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 13px; padding: 8px 8px;" title="<?= htmlspecialchars($g['destinatario']) ?>">

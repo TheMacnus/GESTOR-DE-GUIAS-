@@ -709,7 +709,7 @@ select {
     }
 }
 /* =============================================
-   MODO IMPRESIÓN - ULTRA COMPACTO
+   MODO IMPRESIÓN - DISTRIBUCIÓN PERSONALIZADA
 ============================================== */
 @media print {
 
@@ -718,7 +718,7 @@ select {
         margin: 0.5cm 0.3cm;
     }
 
-    /* Ocultar TODO excepto lo necesario */
+    /* Ocultar elementos de interfaz */
     .menu, form, .acciones, .btn, button, input, select, textarea,
     .btn-menu, .buscador-actualizar, #buscarActualizar, .card-guia,
     #previewActualizar, .seccion form, .seccion .form-grid,
@@ -731,105 +731,177 @@ select {
         display: none !important;
     }
 
-    body, .container, .tabla-container, .resumen {
+    body, .container {
         background: white !important;
         margin: 0 !important;
-        padding: 0 !important;
+        padding: 10px !important;
         width: 100% !important;
-    }
-        /* ALINEACIÓN SUPERIOR - CORREGIDO */
-    body {
         display: block !important;
-        align-items: flex-start !important;
-        justify-content: flex-start !important;
-        min-height: auto !important;
-        padding: 0 !important;
     }
 
-    /* Título pequeño */
+    /* Título */
     h1 {
-        font-size: 12pt !important;
-        margin: 2px 0 !important;
+        font-size: 14pt !important;
+        margin: 0 0 8px 0 !important;
         text-align: center !important;
         color: black !important;
         font-weight: bold !important;
+        background: none !important;
+        -webkit-text-fill-color: black !important;
     }
 
-    /* Resumen ultra compacto */
+    /* Resumen */
     .resumen {
         border: 1px solid #333 !important;
-        padding: 2px !important;
-        margin: 0 0 5px 0 !important;
+        padding: 5px !important;
+        margin: 0 0 10px 0 !important;
+        background: #f9f9f9 !important;
+        page-break-inside: avoid !important;
     }
 
     .resumen-grid {
         display: flex !important;
-        gap: 1px !important;
+        gap: 5px !important;
     }
 
     .resumen-item {
         flex: 1 !important;
         border: 1px solid #999 !important;
-        padding: 1px !important;
+        padding: 4px !important;
         text-align: center !important;
+        background: white !important;
     }
 
     .resumen-item .label {
-        font-size: 6pt !important;
-    }
-
-    .resumen-item .valor {
         font-size: 8pt !important;
         font-weight: bold !important;
     }
 
-    /* ===== TABLA ===== */
+    .resumen-item .valor {
+        font-size: 10pt !important;
+        font-weight: bold !important;
+    }
+
+    /* ===== TABLA CON DISTRIBUCIÓN PERSONALIZADA ===== */
     .tabla-guias {
         width: 100% !important;
         border-collapse: collapse !important;
-        font-size: 6pt !important;
-        border: 1px solid black !important;
+        font-size: 8pt !important;
+        border: 1px solid #333 !important;
         table-layout: fixed !important;
     }
 
-    /* Distribución PERFECTA para 8 columnas */
-    .tabla-guias th:nth-child(1) { width: 7%; } /* Guía */
-    .tabla-guias th:nth-child(2) { width: 4%; }  /* Sucursal */
-    .tabla-guias th:nth-child(3) { width: 7%; } /* Destinatario */
-    .tabla-guias th:nth-child(4) { width: 4%; }  /* Estado */
-    .tabla-guias th:nth-child(5) { width: 4%; }  /* Pago */
-    .tabla-guias th:nth-child(6) { width: 4%; } /* Valor */
-    .tabla-guias th:nth-child(7) { width: 4%; }  /* Paquetes */
-    .tabla-guias th:nth-child(8) { width: 4%; } /* Fecha */
-
+/* Distribución CORREGIDA - suma cercana al 100% */
+.tabla-guias th:nth-child(1) { width: 10%; }  /* Guía */
+.tabla-guias th:nth-child(2) { width: 7; }   /* Sucursal */
+.tabla-guias th:nth-child(3) { width: 10%; }  /* Destinatario - MÁS GRANDE */
+.tabla-guias th:nth-child(4) { width: 24%; }   /* Estado */
+.tabla-guias th:nth-child(5) { width: 7%; }   /* Pago - MÁS PEQUEÑO */
+.tabla-guias th:nth-child(6) { width: 7%; }  /* Valor */
+.tabla-guias th:nth-child(7) { width: 10%; }   /* Paquetes - MUY PEQUEÑO */
+.tabla-guias th:nth-child(8) { width: 5%; }  /* Fecha */
+/* TOTAL: 81% (el resto son bordes y espacios naturales) */
     .tabla-guias th {
         background: #333 !important;
         color: white !important;
-        font-size: 6pt !important;
-        padding: 2px 1px !important;
-        border: 1px solid black !important;
+        font-size: 7.5pt !important;
+        padding: 5px 3px !important;
+        border: 1px solid #333 !important;
+        text-align: center !important;
+        font-weight: bold !important;
     }
 
     .tabla-guias td {
-        padding: 1px !important;
+        padding: 4px 3px !important;
         border: 1px solid #ccc !important;
-        font-size: 10pt !important;
+        font-size: 7.5pt !important;
+        color: black !important;
+        white-space: nowrap !important;
         overflow: hidden !important;
+        text-overflow: ellipsis !important;
     }
 
-    /* Alineaciones */
-    .tabla-guias td:nth-child(2) { text-align: center; }  /* Sucursal */
-    .tabla-guias td:nth-child(4) { text-align: center; }  /* Estado */
-    .tabla-guias td:nth-child(5) { text-align: center; }  /* Pago */
-    .tabla-guias td:nth-child(6) { text-align: right; }   /* Valor */
-    .tabla-guias td:nth-child(7) { text-align: center; }  /* Paquetes */
+    /* Columnas específicas */
+    .tabla-guias td:nth-child(1) { /* Guía */
+        font-family: monospace !important;
+        text-align: left !important;
+    }
+    
+    .tabla-guias td:nth-child(2) { /* Sucursal */
+        text-align: center !important;
+    }
+    
+    .tabla-guias td:nth-child(3) { /* Destinatario - MÁS GRANDE */
+        white-space: normal !important;
+        word-break: break-word !important;
+        text-align: left !important;
+        font-size: 8pt !important; /* Un poco más grande */
+    }
+    
+    .tabla-guias td:nth-child(4) { /* Estado */
+        text-align: center !important;
+        font-size: 7pt !important;
+    }
+    
+    .tabla-guias td:nth-child(5) { /* Pago - MÁS PEQUEÑO */
+        text-align: center !important;
+        font-size: 6.5pt !important; /* Más pequeño */
+    }
+    
+    .tabla-guias td:nth-child(6) { /* Valor */
+        text-align: right !important;
+        white-space: nowrap !important;
+    }
+    
+    .tabla-guias td:nth-child(7) { /* Paquetes - MUY PEQUEÑO */
+        text-align: center !important;
+        font-size: 6pt !important; /* Muy pequeño */
+    }
+    
+    .tabla-guias td:nth-child(8) { /* Fecha */
+        text-align: left !important;
+        font-size: 7pt !important;
+        white-space: nowrap !important;
+    }
 
     /* Estados */
     .estado {
         display: inline-block !important;
-        padding: 1px 2px !important;
-        font-size: 5pt !important;
+        padding: 2px 4px !important;
+        font-size: 6.5pt !important;
         border-radius: 2px !important;
+        font-weight: bold !important;
+        min-width: 40px !important;
+        text-align: center !important;
+    }
+
+    .estado.activa {
+        background-color: #2ecc71 !important;
+        color: white !important;
+    }
+
+    .estado.cancelada {
+        background-color: #e74c3c !important;
+        color: white !important;
+    }
+
+    .estado.devolucion {
+        background-color: #f1c40f !important;
+        color: black !important;
+    }
+
+    /* Alternar colores de filas */
+    .tabla-guias tbody tr:nth-child(even) {
+        background-color: #f9f9f9 !important;
+    }
+
+    /* Manejo de páginas */
+    thead {
+        display: table-header-group !important;
+    }
+
+    tr {
+        page-break-inside: avoid !important;
     }
 }
 /* =============================================

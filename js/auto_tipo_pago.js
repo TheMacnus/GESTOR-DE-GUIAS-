@@ -7,9 +7,8 @@ document.addEventListener("DOMContentLoaded", function() {
     
     console.log("💰 Auto Tipo Pago: Sistema iniciado");
     
-    // =============================================
-    // PARA LA SECCIÓN INSERTAR
-    // =============================================
+    // insert
+    // -----------------------------------
     function initInsertar() {
         const insertarSection = document.getElementById("insertar");
         if (!insertarSection) return false;
@@ -64,9 +63,6 @@ document.addEventListener("DOMContentLoaded", function() {
         return true;
     }
     
-    // =============================================
-    // PARA LA SECCIÓN ACTUALIZAR
-    // =============================================
     function initActualizar() {
         const actualizarSection = document.getElementById("actualizar");
         if (!actualizarSection) return false;
@@ -86,8 +82,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 tipoPagoSelect.style.backgroundColor = "#fff3e0";
                 tipoPagoSelect.style.borderColor = "#ff9800";
             } else {
-                // En actualizar, no cambiar automáticamente a CORRIENTE
-                // porque podría estar modificando solo el valor
+
                 tipoPagoSelect.style.backgroundColor = "";
                 tipoPagoSelect.style.borderColor = "";
             }
@@ -98,9 +93,6 @@ document.addEventListener("DOMContentLoaded", function() {
         return true;
     }
     
-    // =============================================
-    // INICIALIZAR
-    // =============================================
     initInsertar();
     initActualizar();
     

@@ -1,19 +1,10 @@
-/**
- * lightbox.js
- * Funcionalidad para ver imágenes ampliadas (modal)
- */
-
-console.log("🚀 Lightbox: Cargando...");
-
-// Variables globales
 let modalActivo = false;
 
-// Crear el modal si no existe
 function crearModalSiNoExiste() {
-    console.log("🔧 Lightbox: Creando modal...");
+    console.log("lightbox: Creando modal");
     
     if (document.getElementById('modalImagen')) {
-        console.log("✅ Lightbox: Modal ya existe");
+        console.log("lightbox: Modal ya existe");
         return;
     }
     
@@ -26,9 +17,8 @@ function crearModalSiNoExiste() {
     `;
     
     document.body.insertAdjacentHTML('beforeend', modalHTML);
-    console.log("✅ Lightbox: Modal creado");
+    console.log("lightbox: Modal creado");
     
-    // Agregar evento al botón cerrar
     const cerrarBtn = document.getElementById('cerrarModalBtn');
     if (cerrarBtn) {
         cerrarBtn.onclick = function(e) {
@@ -37,7 +27,6 @@ function crearModalSiNoExiste() {
         };
     }
     
-    // Cerrar al hacer clic fuera de la imagen
     const modal = document.getElementById('modalImagen');
     modal.onclick = function(e) {
         if (e.target === modal) {
@@ -46,9 +35,8 @@ function crearModalSiNoExiste() {
     };
 }
 
-// Función para abrir el modal
 function abrirLightbox(src, titulo = '') {
-    console.log("🔍 Lightbox: Intentando abrir:", src);
+    console.log("lightbox: Intentando abrir:", src);
     
     crearModalSiNoExiste();
     
@@ -56,69 +44,76 @@ function abrirLightbox(src, titulo = '') {
     const imgAmpliada = document.getElementById('imagenAmpliada');
     const modalTitulo = document.getElementById('modal-titulo');
     
-    if (!modal) {
-        console.error("❌ Lightbox: Modal no encontrado");
-        return;
-    }
+    if (!modal || !imgAmpliada) return;
     
-    if (!imgAmpliada) {
-        console.error("❌ Lightbox: Imagen ampliada no encontrada");
-        return;
-    }
-    
-    // Configurar la imagen
-    imgAmpliada.src = src;
+    imgAmpliada.src = '';
     modalTitulo.textContent = titulo;
     
-    // Mostrar modal
     modal.style.display = 'block';
     modalActivo = true;
-    
-    // Prevenir scroll
     document.body.style.overflow = 'hidden';
     
-    console.log("✅ Lightbox: Abierto correctamente");
-    
-    // Evento de carga exitosa
     imgAmpliada.onload = function() {
-        console.log("✅ Lightbox: Imagen cargada:", src);
+        console.log("lightbox: Imagen cargada correctamente");
     };
     
-    // Evento de error
-    imgAmpliada.onerror = function() {
-        console.error("❌ Lightbox: Error al cargar imagen:", src);
-        modalTitulo.textContent = "Error al cargar la imagen";
-    };
+imgAmpliada.onerror = function() {
+    console.error("lightbox: Error al cargar imagen:", src);
+    
+    const rutaActual = window.location.pathname;
+    let basePath = '';
+    if (rutaActual.includes('/')) {
+        const partes = rutaActual.split('/');
+        if (partes.length > 1 && partes[1] !== '') {
+            basePath = '/' + partes[1];
+        }
+    }
+    
+    if (src.includes('/vouchers/')) {
+        const nombreArchivo = src.split('/').pop();
+        const rutaDirecta = window.location.origin + basePath + '/vouchers/' + nombreArchivo;
+        
+        console.log("🔄 Lightbox: Intentando ruta directa:", rutaDirecta);
+        imgAmpliada.src = rutaDirecta;
+        
+        imgAmpliada.onerror = function() {
+            console.error("❌ Lightbox: También falló");
+            modalTitulo.textContent = "Error: No se pudo cargar la imagen";
+        };
+        
+        return;
+    }
+    
+    modalTitulo.textContent = "Error: No se pudo cargar la imagen";
+};
+    
+    imgAmpliada.src = src;
 }
 
-// Función para cerrar el modal
 function cerrarLightbox() {
-    console.log("🔍 Lightbox: Cerrando...");
+    console.log("lightbox: Cerrando...");
     
     const modal = document.getElementById('modalImagen');
     if (modal) {
         modal.style.display = 'none';
         modalActivo = false;
         document.body.style.overflow = 'auto';
-        console.log("✅ Lightbox: Cerrado");
+        console.log("lightbox: Cerrado");
     }
 }
 
-// Cerrar con tecla ESC
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape' && modalActivo) {
-        console.log("🔍 Lightbox: Cerrando con ESC");
+        console.log("lightbox: Cerrando con ESC");
         cerrarLightbox();
     }
 });
 
-// Inicializar cuando carga la página
 document.addEventListener('DOMContentLoaded', function() {
-    console.log("🚀 Lightbox: Inicializando...");
+    console.log("lightbox: Inicializando...");
     crearModalSiNoExiste();
-    console.log("✅ Lightbox: Listo");
+    console.log("lightbox: Listo");
 });
 
-// Hacer funciones globales
 window.abrirLightbox = abrirLightbox;
 window.cerrarLightbox = cerrarLightbox;

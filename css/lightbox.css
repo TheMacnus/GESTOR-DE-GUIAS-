@@ -1,5 +1,3 @@
-<style>
-/* Estilos directos para el lightbox */
 .modal-imagen {
     display: none;
     position: fixed;
@@ -50,4 +48,3 @@
     padding: 10px;
     background: rgba(0,0,0,0.5);
 }
-</style>

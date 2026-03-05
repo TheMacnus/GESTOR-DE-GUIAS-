@@ -1,67 +1,192 @@
-/**
- * imprimir.js - Funcionalidad de impresión sin ventanas nuevas
- */
+
 
 function imprimirManifiesto() {
-    // Verificar si hay resultados
     const tablaContainer = document.querySelector('.tabla-container');
     if (!tablaContainer) {
         alert('No hay resultados para imprimir');
         return;
     }
     
-    // Verificar si hay checkboxes
     const checkboxes = document.querySelectorAll('.seleccionar-guia');
     
-    // Si no hay checkboxes, imprimir directamente
     if (checkboxes.length === 0) {
         window.print();
         return;
     }
     
-    // Verificar cuántas están seleccionadas
     const seleccionadas = document.querySelectorAll('.seleccionar-guia:checked');
     
     if (seleccionadas.length > 0) {
-        // Hay seleccionadas - ocultar las no seleccionadas
-        ocultarNoSeleccionadasYImprimir();
+        imprimirConSeleccion();
     } else {
-        // No hay seleccionadas - ocultar la columna checkbox y imprimir
-        ocultarColumnaCheckboxYImprimir();
+        imprimirTodoSinCheckbox();
     }
 }
 
-function ocultarNoSeleccionadasYImprimir() {
-    const filas = document.querySelectorAll('#tablaResultados tbody tr');
-    const filasOcultas = [];
+function calcularResumen(filas = null) {
+    let totalGuias = 0;
+    let totalPaquetes = 0;
+    let totalActivo = 0;
+    let totalCancelado = 0;
+    
+    const filasAProcesar = filas || document.querySelectorAll('#tablaResultados tbody tr');
+    
+    filasAProcesar.forEach(fila => {
+        const celdas = fila.querySelectorAll('td');
+        if (celdas.length < 8) return;
+        
+        const estado = celdas[4]?.querySelector('.estado')?.textContent.trim() || celdas[4]?.textContent.trim() || '';
+        const valorTexto = celdas[6]?.textContent.trim().replace(/[$,.]/g, '') || '0';
+        const paquetes = parseInt(celdas[7]?.textContent.trim()) || 1;
+        
+        totalGuias++;
+        totalPaquetes += paquetes;
+        const valor = parseFloat(valorTexto) || 0;
+        
+        if (estado.includes('ACT')) {
+            totalActivo += valor;
+        } else if (estado.includes('CAN') || estado.includes('DEV')) {
+            totalCancelado += valor;
+        }
+    });
+    
+    return {
+        guias: totalGuias,
+        paquetes: totalPaquetes,
+        activo: totalActivo,
+        cancelado: totalCancelado
+    };
+}
+
+function crearResumenHTML(resumen) {
+    return `
+        <div class="resumen-impresion">
+            <div class="grid">
+                <div class="item">
+                    <span class="label">Total Guías</span>
+                    <span class="valor total-guias">${resumen.guias}</span>
+                </div>
+                <div class="item">
+                    <span class="label">Total Paquetes</span>
+                    <span class="valor total-paquetes">${resumen.paquetes}</span>
+                </div>
+                <div class="item">
+                    <span class="label">Total Activo</span>
+                    <span class="valor total-activo">$${resumen.activo.toLocaleString('es-CO')}</span>
+                </div>
+                <div class="item">
+                    <span class="label">Total Cancelado</span>
+                    <span class="valor total-cancelado">$${resumen.cancelado.toLocaleString('es-CO')}</span>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function imprimirTodoSinCheckbox() {
     const cabeceras = document.querySelectorAll('#tablaResultados thead th');
-    const celdasOcultas = [];
+    const filas = document.querySelectorAll('#tablaResultados tbody tr');
+    const elementosOcultos = [];
     
-    // Guardar estado original de la primera cabecera (checkbox)
-    const cabeceraOriginalDisplay = cabeceras[0].style.display;
+    const resumen = calcularResumen(filas);
+    const resumenDiv = document.createElement('div');
+
+    resumenDiv.id = 'resumen-temporal';
+    resumenDiv.innerHTML = crearResumenHTML(resumen);
     
-    // Ocultar la primera cabecera (checkbox)
-    cabeceras[0].style.display = 'none';
+    const tabla = document.querySelector('.tabla-container');
+
+    tabla.parentNode.insertBefore(resumenDiv, tabla);
+    elementosOcultos.push({
+        el: resumenDiv,
+        display: 'block'
+    });
     
-    // Ocultar la primera celda de cada fila (checkbox) Y las filas no seleccionadas
+    if (cabeceras.length > 0) {
+        elementosOcultos.push({
+            el: cabeceras[0],
+            display: cabeceras[0].style.display
+        });
+        cabeceras[0].style.display = 'none';
+    }
+    
+    filas.forEach(fila => {
+        const primeraCelda = fila.querySelector('td:first-child');
+        if (primeraCelda) {
+            elementosOcultos.push({
+                el: primeraCelda,
+                display: primeraCelda.style.display
+            });
+            primeraCelda.style.display = 'none';
+        }
+    });
+    
+    // Imprimir
+    window.print();
+    
+    // Restaurar todo
+    setTimeout(() => {
+        elementosOcultos.forEach(item => {
+            item.el.style.display = item.display;
+        });
+        if (resumenDiv.parentNode) {
+            resumenDiv.parentNode.removeChild(resumenDiv);
+        }
+    }, 100);
+}
+
+function imprimirConSeleccion() {
+    const filas = document.querySelectorAll('#tablaResultados tbody tr');
+    const cabeceras = document.querySelectorAll('#tablaResultados thead th');
+    const elementosOcultos = [];
+    
+    const filasSeleccionadas = [];
+    filas.forEach(fila => {
+        const checkbox = fila.querySelector('.seleccionar-guia');
+        if (checkbox && checkbox.checked) {
+            filasSeleccionadas.push(fila);
+        }
+    });
+    
+    const resumen = calcularResumen(filasSeleccionadas);
+    
+    const resumenDiv = document.createElement('div');
+    resumenDiv.id = 'resumen-temporal';
+    resumenDiv.innerHTML = crearResumenHTML(resumen);
+    
+    const tabla = document.querySelector('.tabla-container');
+    tabla.parentNode.insertBefore(resumenDiv, tabla);
+    elementosOcultos.push({
+        el: resumenDiv,
+        display: 'block'
+    });
+    
+    if (cabeceras.length > 0) {
+        elementosOcultos.push({
+            el: cabeceras[0],
+            display: cabeceras[0].style.display
+        });
+        cabeceras[0].style.display = 'none';
+    }
+    
     filas.forEach(fila => {
         const checkbox = fila.querySelector('.seleccionar-guia');
         const primeraCelda = fila.querySelector('td:first-child');
         
-        // Guardar estado original de la primera celda
         if (primeraCelda) {
-            celdasOcultas.push({
-                celda: primeraCelda,
-                displayOriginal: primeraCelda.style.display
+            elementosOcultos.push({
+                el: primeraCelda,
+                display: primeraCelda.style.display
             });
         }
         
         if (checkbox && !checkbox.checked) {
-            // Ocultar fila completa si no está seleccionada
+            elementosOcultos.push({
+                el: fila,
+                display: fila.style.display
+            });
             fila.style.display = 'none';
-            filasOcultas.push(fila);
         } else if (checkbox && checkbox.checked) {
-            // Solo ocultar la primera celda (checkbox) en filas seleccionadas
             if (primeraCelda) {
                 primeraCelda.style.display = 'none';
             }
@@ -73,53 +198,12 @@ function ocultarNoSeleccionadasYImprimir() {
     
     // Restaurar todo
     setTimeout(() => {
-        // Restaurar cabecera
-        cabeceras[0].style.display = cabeceraOriginalDisplay;
-        
-        // Restaurar celdas
-        celdasOcultas.forEach(item => {
-            item.celda.style.display = item.displayOriginal;
+        elementosOcultos.forEach(item => {
+            item.el.style.display = item.display;
         });
-        
-        // Restaurar filas ocultas
-        filasOcultas.forEach(fila => {
-            fila.style.display = '';
-        });
-    }, 100);
-}
-
-function ocultarColumnaCheckboxYImprimir() {
-    const cabeceras = document.querySelectorAll('#tablaResultados thead th');
-    const filas = document.querySelectorAll('#tablaResultados tbody tr');
-    
-    // Guardar estado original de las cabeceras
-    const cabeceraOriginal = cabeceras[0].style.display;
-    
-    // Ocultar la primera cabecera (checkbox)
-    cabeceras[0].style.display = 'none';
-    
-    // Guardar estado original de las primeras celdas
-    const celdasOcultas = [];
-    filas.forEach(fila => {
-        const primeraCelda = fila.querySelector('td:first-child');
-        if (primeraCelda) {
-            celdasOcultas.push({
-                celda: primeraCelda,
-                displayOriginal: primeraCelda.style.display
-            });
-            primeraCelda.style.display = 'none';
+        if (resumenDiv.parentNode) {
+            resumenDiv.parentNode.removeChild(resumenDiv);
         }
-    });
-    
-    // Imprimir
-    window.print();
-    
-    // Restaurar todo
-    setTimeout(() => {
-        cabeceras[0].style.display = cabeceraOriginal;
-        celdasOcultas.forEach(item => {
-            item.celda.style.display = item.displayOriginal;
-        });
     }, 100);
 }
 
@@ -156,7 +240,6 @@ function actualizarContador() {
     contador.textContent = seleccionadas + ' seleccionada' + (seleccionadas !== 1 ? 's' : '');
 }
 
-// Inicializar
 document.addEventListener('DOMContentLoaded', function() {
     const checkboxes = document.querySelectorAll('.seleccionar-guia');
     if (checkboxes.length > 0) {

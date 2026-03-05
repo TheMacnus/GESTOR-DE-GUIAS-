@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Coordinadora Trinidad</title>
+    <title class="title">Coordinadora Trinidad</title>
     <link rel="stylesheet" href="css/index.css?v=<?= time() ?>">
     <link rel="stylesheet" href="css/lightbox.css">
 </head>
@@ -87,6 +87,11 @@ if (isset($_GET['msg'])) {
                     <label>Fecha Hasta:</label>
                     <input type="date" name="fecha_hasta">
                 </div>
+            </div>
+            <div class="filtros-rapidos" style="margin: 10px 0; display: flex; gap: 10px;">
+                <button type="submit" name="hoy" value="1" class="btn btn-info">📅 Guías de Hoy</button>
+                <button type="submit" name="trinidad_hoy" value="1" class="btn btn-info">🏢 Trinidad Hoy</button>
+                <button type="submit" name="sanluis_hoy" value="1" class="btn btn-info" style="background: #ffc107; color: black;"> 🏢 San Luis HOY</button>
             </div>
 
             <div class="acciones">

@@ -1,61 +1,81 @@
 <?php
-/**
- * get_voucher.php
- * Sirve imágenes de vouchers de manera segura y compatible con todos los navegadores
- */
 
-// Configurar errores
+
+// Configure errors
 ini_set('display_errors', 0);
 error_reporting(0);
 
-// Obtener el nombre del voucher
+// ===== LOGS =====
+$log_file = __DIR__ . '/voucher_debug.log';
+
+function log_debug($msg) {
+    global $log_file;
+    $fecha = date('Y-m-d H:i:s');
+    file_put_contents($log_file, "[$fecha] $msg\n", FILE_APPEND);
+}
+
+log_debug("=== get_voucher.php INICIADO ===");
+log_debug("GET: " . print_r($_GET, true));
+
+// ===== voucher =====
 $voucher = isset($_GET['voucher']) ? $_GET['voucher'] : '';
-$voucher = basename($voucher); // Eliminar rutas
 
 if (empty($voucher)) {
+    log_debug("ERROR: voucher vacío");
     http_response_code(404);
     exit;
 }
 
-// Ruta completa al archivo
+$voucher_original = $voucher;
+$voucher = basename($voucher);
+log_debug("Voucher original: $voucher_original");
+log_debug("Voucher limpio: $voucher");
+
 $ruta_archivo = __DIR__ . '/../vouchers/' . $voucher;
+log_debug("Ruta archivo: $ruta_archivo");
 
-// Verificar que el archivo existe
 if (!file_exists($ruta_archivo)) {
+    log_debug("ERROR: Archivo NO existe");
     http_response_code(404);
+    echo "Archivo no encontrado";
     exit;
 }
 
-// Obtener el tipo MIME
-$finfo = finfo_open(FILEINFO_MIME_TYPE);
-$mime_type = finfo_file($finfo, $ruta_archivo);
-finfo_close($finfo);
+log_debug("Archivo ENCONTRADO");
+log_debug("Tamaño: " . filesize($ruta_archivo));
 
-// Si no se pudo determinar, usar tipo genérico
-if (!$mime_type) {
-    $extension = strtolower(pathinfo($ruta_archivo, PATHINFO_EXTENSION));
-    $mime_types = [
-        'jpg' => 'image/jpeg',
-        'jpeg' => 'image/jpeg',
-        'png' => 'image/png',
-        'gif' => 'image/gif',
-        'webp' => 'image/webp',
-        'bmp' => 'image/bmp'
-    ];
-    $mime_type = isset($mime_types[$extension]) ? $mime_types[$extension] : 'application/octet-stream';
+// ===== MIME =====
+$extension = strtolower(pathinfo($ruta_archivo, PATHINFO_EXTENSION));
+$mime_types = [
+    'jpg' => 'image/jpeg',
+    'jpeg' => 'image/jpeg',
+    'png' => 'image/png',
+    'gif' => 'image/gif',
+    'webp' => 'image/webp',
+    'bmp' => 'image/bmp'
+];
+
+$mime_type = isset($mime_types[$extension]) ? $mime_types[$extension] : 'application/octet-stream';
+
+if (function_exists('finfo_open')) {
+    $finfo = finfo_open(FILEINFO_MIME_TYPE);
+    $finfo_mime = finfo_file($finfo, $ruta_archivo);
+    finfo_close($finfo);
+    if ($finfo_mime) {
+        $mime_type = $finfo_mime;
+    }
 }
 
-// Headers para forzar caché y compatibilidad
+log_debug("MIME type: $mime_type");
+
 header('Content-Type: ' . $mime_type);
 header('Content-Length: ' . filesize($ruta_archivo));
-header('Cache-Control: public, max-age=86400'); // Cache por 24 horas
+header('Cache-Control: public, max-age=86400'); // 24h
 header('Expires: ' . gmdate('D, d M Y H:i:s', time() + 86400) . ' GMT');
 header('Pragma: public');
+header('X-Content-Type-Options: nosniff'); // for Firefox
 
-// Para Firefox, asegurar que no hay caché problemática
-header('X-Content-Type-Options: nosniff');
-
-// Leer y enviar el archivo
 readfile($ruta_archivo);
+log_debug("=== get_voucher.php COMPLETADO ===");
 exit;
 ?>

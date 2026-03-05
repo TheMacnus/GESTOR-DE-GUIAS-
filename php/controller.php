@@ -6,14 +6,12 @@ error_reporting(E_ALL);
 
 require_once __DIR__ . "/conexion.php";
 
-// Al inicio del archivo, después de require_once
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 // Crear un log de errores
 ini_set('error_log', __DIR__ . '/error.log');
 
-// Función para depurar
 function debug_log($msg, $data = null) {
     $log = date('Y-m-d H:i:s') . " - " . $msg;
     if ($data) {
@@ -24,53 +22,98 @@ function debug_log($msg, $data = null) {
 }
 
 
-/* =========================
-   INSERTAR GUÍA
-========================= */
+
 function insertarGuia($data) {
     global $conexion;
 
-    $sql = "INSERT INTO guias 
-        (sucursal, numero_guia, destinatario, descripcion, tipo_pago, valor_cobro, estado, numero_paquetes)
-        VALUES (?, ?, ?, ?, ?, ?, 'ACTIVA', ?)";
-
-    $stmt = $conexion->prepare($sql);
+    // Verificar si la guía ya existe
+    $sql_check = "SELECT id, estado FROM guias WHERE numero_guia = ?";
+    $stmt_check = $conexion->prepare($sql_check);
+    $stmt_check->bind_param("i", $data['numero_guia']);
+    $stmt_check->execute();
+    $result = $stmt_check->get_result();
     
-    if (!$stmt) {
-        debug_log("Error en prepare: " . $conexion->error);
-        return false;
-    }
-
     $valor = $data['valor_cobro'] ?? 0;
     $paquetes = isset($data['numero_paquetes']) ? intval($data['numero_paquetes']) : 1;
-
-    $stmt->bind_param(
-        "sisssdi",  // string, int, string, string, string, double, int
-        $data['sucursal'],
-        $data['numero_guia'],
-        $data['destinatario'],
-        $data['descripcion'],
-        $data['tipo_pago'],
-        $valor,
-        $paquetes
-    );
-
-    $resultado = $stmt->execute();
     
-    if (!$resultado) {
-        debug_log("Error en execute: " . $stmt->error);
+    if ($result->num_rows > 0) {
+        // LA GUÍA YA EXISTE - Actualizar TODO incluyendo estado
+        $guia = $result->fetch_assoc();
+        
+        $sql_update = "UPDATE guias 
+                       SET fecha_creacion = CURRENT_TIMESTAMP(),
+                           destinatario = ?,
+                           descripcion = ?,
+                           tipo_pago = ?,
+                           valor_cobro = ?,
+                           numero_paquetes = ?,
+                           estado = ?,
+                           sucursal = ?
+                       WHERE id = ?";
+        
+        $stmt_update = $conexion->prepare($sql_update);
+        
+        $stmt_update->bind_param(
+            "sssdiisi", 
+            $data['destinatario'],
+            $data['descripcion'],
+            $data['tipo_pago'],
+            $valor,
+            $paquetes,
+            $data['estado'],      // <-- ESTADO DEL FORMULARIO
+            $data['sucursal'],
+            $guia['id']
+        );
+        
+        $resultado = $stmt_update->execute();
+        
+        if ($resultado) {
+            debug_log("Guía existente actualizada: " . $data['numero_guia'] . " - Estado: " . $data['estado']);
+        }
+        
+        return $resultado;
+        
+    } else {
+        // GUÍA NUEVA - Insertar con el estado del formulario
+        $sql_insert = "INSERT INTO guias 
+            (sucursal, numero_guia, destinatario, descripcion, tipo_pago, valor_cobro, estado, numero_paquetes)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+
+        $stmt_insert = $conexion->prepare($sql_insert);
+        
+        if (!$stmt_insert) {
+            debug_log("Error en prepare: " . $conexion->error);
+            return false;
+        }
+
+        $stmt_insert->bind_param(
+            "sisssdsi",  // string, int, string, string, string, double, string, int
+            $data['sucursal'],
+            $data['numero_guia'],
+            $data['destinatario'],
+            $data['descripcion'],
+            $data['tipo_pago'],
+            $valor,
+            $data['estado'],      // <-- ESTADO DEL FORMULARIO
+            $paquetes
+        );
+
+        $resultado = $stmt_insert->execute();
+        
+        if (!$resultado) {
+            debug_log("Error en execute: " . $stmt_insert->error);
+        } else {
+            debug_log("Nueva guía insertada: " . $data['numero_guia'] . " - Estado: " . $data['estado']);
+        }
+        
+        return $resultado;
     }
-    
-    return $resultado;
 }
 
-/* =========================
-   ACTUALIZAR GUÍA COMPLETA (con voucher) - ACTUALIZACIÓN PARCIAL
-========================= */
+
 function actualizarGuia($data, $files) {
     global $conexion;
     
-    // Primero obtener los datos actuales de la guía
     $sql_select = "SELECT * FROM guias WHERE numero_guia = ?";
     $stmt_select = $conexion->prepare($sql_select);
     $stmt_select->bind_param("i", $data['numero_guia']);
@@ -87,30 +130,25 @@ function actualizarGuia($data, $files) {
     $params = [];
     $types = "";
     
-    // Sucursal (solo si se envió y es válida)
     if (isset($data['sucursal']) && !empty($data['sucursal'])) {
         $campos_actualizar[] = "sucursal = ?";
         $params[] = $data['sucursal'];
         $types .= "s";
     }
     
-    // Estado (solo si se envió y es válido)
     if (isset($data['estado']) && !empty($data['estado'])) {
         $campos_actualizar[] = "estado = ?";
         $params[] = $data['estado'];
         $types .= "s";
     }
     
-    // Tipo de pago (solo si se envió y es válido)
     if (isset($data['tipo_pago']) && !empty($data['tipo_pago'])) {
         $campos_actualizar[] = "tipo_pago = ?";
         $params[] = $data['tipo_pago'];
         $types .= "s";
     }
     
-    // Valor a cobrar (solo si se envió y es válido, y si es COBRO)
     if (isset($data['valor_cobro']) && $data['valor_cobro'] !== '') {
-        // Si el tipo de pago es COBRO, usar el valor enviado, si no, 0
         $tipo_pago = $data['tipo_pago'] ?? $guia_actual['tipo_pago'];
         $valor = ($tipo_pago === 'COBRO') ? floatval($data['valor_cobro']) : 0;
         $campos_actualizar[] = "valor_cobro = ?";
@@ -183,6 +221,7 @@ function buscarGuias($data) {
     $params = [];
     $types = "";
 
+
     if (!empty($data['numero_guia'])) {
         $longitud = strlen($data['numero_guia']);
         $sql .= " AND RIGHT(CAST(numero_guia AS CHAR), ?) = ?";
@@ -209,6 +248,28 @@ function buscarGuias($data) {
         $types .= "s";
     }
 
+    // =============================================
+    // FILTROS RÁPIDOS NUEVOS (sin afectar los anteriores)
+    // =============================================
+    
+    // FILTRO: Guías de HOY (cualquier sucursal)
+    if (!empty($data['hoy']) && $data['hoy'] == '1') {
+        $sql .= " AND DATE(fecha_creacion) = CURDATE()";
+    }
+    
+    // FILTRO: Guías de TRINIDAD de HOY
+    if (!empty($data['trinidad_hoy']) && $data['trinidad_hoy'] == '1') {
+        $sql .= " AND sucursal = 'TRINIDAD' AND DATE(fecha_creacion) = CURDATE()";
+    }
+    
+    // FILTRO: Guías de SAN LUIS de HOY
+    if (!empty($data['sanluis_hoy']) && $data['sanluis_hoy'] == '1') {
+        $sql .= " AND sucursal = 'SAN_LUIS' AND DATE(fecha_creacion) = CURDATE()";
+    }
+
+    // =============================================
+    // FILTRO DE FECHAS (rango personalizado)
+    // =============================================
     if (!empty($data['fecha_desde']) && !empty($data['fecha_hasta'])) {
         $sql .= " AND fecha_creacion BETWEEN ? AND ?";
         $params[] = $data['fecha_desde'] . " 00:00:00";
@@ -216,8 +277,14 @@ function buscarGuias($data) {
         $types .= "ss";
     }
 
+    // =============================================
+    // ORDENAMIENTO
+    // =============================================
     $sql .= " ORDER BY fecha_creacion DESC";
 
+    // =============================================
+    // EJECUTAR
+    // =============================================
     $stmt = $conexion->prepare($sql);
 
     if ($params) {

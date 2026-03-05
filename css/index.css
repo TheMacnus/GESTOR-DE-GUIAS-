@@ -1,6 +1,4 @@
-/* =============================================
-   VARIABLES GLOBALES - DEBEN IR AL PRINCIPIO
-============================================= */
+/* global */
 :root {
     --primary: #4361ee;
     --primary-light: #4895ef;
@@ -51,10 +49,10 @@ h1 {
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    color: #4361ee; /* Fallback para navegadores muy antiguos */
+    color: #4361ee; /* fallback */
 }
 
-/* Fallback específico para Firefox si es necesario */
+/* fallback for Firefox*/
 @-moz-document url-prefix() {
     h1 {
         background: linear-gradient(135deg, #4361ee, #4cc9f0);
@@ -63,11 +61,7 @@ h1 {
     }
 }
 
-/* ... resto del CSS ... */
-
-/* =============================================
-   MENÚ PRINCIPAL
-============================================= */
+/* menu */
 .menu {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -126,9 +120,7 @@ h1 {
     color: var(--white);
 }
 
-/* =============================================
-   SECCIONES
-============================================= */
+/* seccions */
 .seccion {
     display: none;
     background: var(--white);
@@ -163,9 +155,7 @@ h1 {
     display: inline-block;
 }
 
-/* =============================================
-   FORMULARIOS MODERNOS
-============================================= */
+/* forms */
 .form-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -236,9 +226,7 @@ select {
     padding-right: 45px;
 }
 
-/* =============================================
-   BOTONES DE ACCIÓN
-============================================= */
+/* btn accions */
 .acciones {
     display: flex;
     gap: 15px;
@@ -318,9 +306,7 @@ select {
     color: var(--white);
 }
 
-/* =============================================
-   TARJETA DE PREVISUALIZACIÓN
-============================================= */
+/* card */
 .card-guia {
     background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
     border-radius: var(--radius);
@@ -362,9 +348,7 @@ select {
     margin-right: 8px;
 }
 
-/* =============================================
-   VOUCHER
-============================================= */
+/* voucher */
 .voucher-actual {
     margin-top: 20px;
     padding: 15px;
@@ -389,9 +373,7 @@ select {
     box-shadow: var(--shadow);
 }
 
-/* =============================================
-   TABLA DE RESULTADOS MODERNA
-============================================= */
+/* table */
 .tabla-container {
     background: var(--white);
     border-radius: var(--radius);
@@ -448,7 +430,7 @@ select {
     box-shadow: var(--shadow-sm);
 }
 
-/* Estados */
+/* states */
 .estado {
     display: inline-block;
     padding: 6px 15px;
@@ -477,9 +459,7 @@ select {
     box-shadow: 0 3px 10px rgba(255, 183, 3, 0.3);
 }
 
-/* =============================================
-   RESUMEN DE BÚSQUEDA
-============================================= */
+/* search r*/
 .resumen {
     background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
     border-radius: var(--radius);
@@ -532,9 +512,7 @@ select {
     line-height: 1.2;
 }
 
-/* =============================================
-   INDICADOR DE TIPO DE PAGO
-============================================= */
+/* tp*/
 .tipo-pago-indicador {
     display: inline-block;
     margin-left: 10px;
@@ -566,9 +544,7 @@ select {
     border-left: 4px solid var(--warning);
 }
 
-/* =============================================
-   RESPONSIVE
-============================================= */
+/* r */
 @media (max-width: 1024px) {
     .resumen-grid {
         grid-template-columns: repeat(2, 1fr);
@@ -611,9 +587,7 @@ select {
     }
 }
 
-/* =============================================
-   ANIMACIONES ADICIONALES
-============================================= */
+/* animates */
 @keyframes pulse {
     0% {
         transform: scale(1);
@@ -630,7 +604,7 @@ select {
     animation: pulse 2s infinite;
 }
 
-/* Scrollbar personalizada */
+/* Scrollbar */
 ::-webkit-scrollbar {
     width: 10px;
     height: 10px;
@@ -680,12 +654,12 @@ select {
     visibility: visible;
     bottom: calc(100% + 10px);
 }
-/* Clase para ocultar elementos */
+/* Clase */
 .oculto {
     display: none !important;
 }
 
-/* Estilo para botón activo en el menú */
+/* bnt menu */
 .btn-menu.active {
     background: var(--primary);
     color: var(--white);
@@ -693,7 +667,7 @@ select {
     box-shadow: var(--shadow-sm);
 }
 
-/* Animación para el cambio de sección */
+/* Animate */
 .seccion {
     animation: fadeIn 0.5s ease;
 }
@@ -708,9 +682,7 @@ select {
         transform: translateY(0);
     }
 }
-/* =============================================
-   MODO IMPRESIÓN - DISTRIBUCIÓN PERSONALIZADA
-============================================== */
+/* print */
 @media print {
 
     @page {
@@ -718,8 +690,8 @@ select {
         margin: 0.5cm 0.3cm;
     }
 
-    /* Ocultar elementos de interfaz */
-    .menu, form, .acciones, .btn, button, input, select, textarea,
+    /* ocultar elementos de interfaz */
+    .menu, .container, form, .acciones, .btn, button, input, select, textarea,
     .btn-menu, .buscador-actualizar, #buscarActualizar, .card-guia,
     #previewActualizar, .seccion form, .seccion .form-grid,
     .seccion input, .seccion select, .seccion button, .seccion .acciones,
@@ -727,7 +699,8 @@ select {
     #sinVoucher, [type="submit"], [type="button"], [type="reset"],
     [type="file"], .form-group label[for]::after, .tipo-pago-indicador,
     .valor-cobro-info, .btn-success, #buscar h2, .seccion h2,
-    .tabla-container h3, .resumen h3 {
+    .tabla-container h3, 
+    .resumen {
         display: none !important;
     }
 
@@ -739,7 +712,7 @@ select {
         display: block !important;
     }
 
-    /* Título */
+    /* title */
     h1 {
         font-size: 14pt !important;
         margin: 0 0 8px 0 !important;
@@ -750,39 +723,51 @@ select {
         -webkit-text-fill-color: black !important;
     }
 
-    /* Resumen */
-    .resumen {
-        border: 1px solid #333 !important;
-        padding: 5px !important;
-        margin: 0 0 10px 0 !important;
-        background: #f9f9f9 !important;
-        page-break-inside: avoid !important;
-    }
+.resumen-impresion {
+    border: 1px solid #333;
+    padding: 8px;
+    margin: 0 0 15px 0;
+    background: #f9f9f9;
+    page-break-inside: avoid;
+}
 
-    .resumen-grid {
-        display: flex !important;
-        gap: 5px !important;
-    }
+.resumen-impresion .grid {
+    display: flex;
+    gap: 8px;
+}
 
-    .resumen-item {
-        flex: 1 !important;
-        border: 1px solid #999 !important;
-        padding: 4px !important;
-        text-align: center !important;
-        background: white !important;
-    }
+.resumen-impresion .item {
+    flex: 1;
+    border: 1px solid #999;
+    padding: 6px;
+    text-align: center;
+    background: white;
+}
 
-    .resumen-item .label {
-        font-size: 8pt !important;
-        font-weight: bold !important;
-    }
+.resumen-impresion .label {
+    display: block;
+    font-size: 9pt;
+    font-weight: bold;
+    color: #555;
+}
 
-    .resumen-item .valor {
-        font-size: 10pt !important;
-        font-weight: bold !important;
-    }
+.resumen-impresion .valor {
+    display: block;
+    font-size: 11pt;
+    font-weight: bold;
+}
 
-    /* ===== TABLA CON DISTRIBUCIÓN PERSONALIZADA ===== */
+.resumen-impresion .valor.total-guias { color: #1976d2; }
+.resumen-impresion .valor.total-paquetes { color: #2e7d32; }
+.resumen-impresion .valor.total-activo { color: #f57c00; }
+.resumen-impresion .valor.total-cancelado { color: #c62828; }
+
+@media print {
+    .resumen-impresion {
+        display: block !important;
+    }
+}
+
     .tabla-guias {
         width: 100% !important;
         border-collapse: collapse !important;
@@ -791,16 +776,15 @@ select {
         table-layout: fixed !important;
     }
 
-/* Distribución CORREGIDA - suma cercana al 100% */
-.tabla-guias th:nth-child(1) { width: 10%; }  /* Guía */
-.tabla-guias th:nth-child(2) { width: 7; }   /* Sucursal */
-.tabla-guias th:nth-child(3) { width: 10%; }  /* Destinatario - MÁS GRANDE */
-.tabla-guias th:nth-child(4) { width: 24%; }   /* Estado */
-.tabla-guias th:nth-child(5) { width: 7%; }   /* Pago - MÁS PEQUEÑO */
-.tabla-guias th:nth-child(6) { width: 7%; }  /* Valor */
-.tabla-guias th:nth-child(7) { width: 10%; }   /* Paquetes - MUY PEQUEÑO */
-.tabla-guias th:nth-child(8) { width: 5%; }  /* Fecha */
-/* TOTAL: 81% (el resto son bordes y espacios naturales) */
+.tabla-guias th:nth-child(1) { width: 10%; }  /* Sucursal */
+.tabla-guias th:nth-child(2) { width: 7; }   /* Destinatario */
+.tabla-guias th:nth-child(3) { width: 10%; }  /* Estado */
+.tabla-guias th:nth-child(4) { width: 24%; }   /* Pago */
+.tabla-guias th:nth-child(5) { width: 7%; }   /* Valor */
+.tabla-guias th:nth-child(6) { width: 7%; }  /* Paquetes */
+.tabla-guias th:nth-child(7) { width: 10%; }   /* Fecha */
+.tabla-guias th:nth-child(8) { width: 5%; }  
+
     .tabla-guias th {
         background: #333 !important;
         color: white !important;
@@ -821,8 +805,7 @@ select {
         text-overflow: ellipsis !important;
     }
 
-    /* Columnas específicas */
-    .tabla-guias td:nth-child(1) { /* Guía */
+    .tabla-guias td:nth-child(1) { /* Guia */
         font-family: monospace !important;
         text-align: left !important;
     }
@@ -831,11 +814,11 @@ select {
         text-align: center !important;
     }
     
-    .tabla-guias td:nth-child(3) { /* Destinatario - MÁS GRANDE */
+    .tabla-guias td:nth-child(3) { /* Destinatario */
         white-space: normal !important;
         word-break: break-word !important;
         text-align: left !important;
-        font-size: 8pt !important; /* Un poco más grande */
+        font-size: 8pt !important; 
     }
     
     .tabla-guias td:nth-child(4) { /* Estado */
@@ -843,9 +826,9 @@ select {
         font-size: 7pt !important;
     }
     
-    .tabla-guias td:nth-child(5) { /* Pago - MÁS PEQUEÑO */
+    .tabla-guias td:nth-child(5) { /* Pago */
         text-align: center !important;
-        font-size: 6.5pt !important; /* Más pequeño */
+        font-size: 6.5pt !important; 
     }
     
     .tabla-guias td:nth-child(6) { /* Valor */
@@ -853,9 +836,9 @@ select {
         white-space: nowrap !important;
     }
     
-    .tabla-guias td:nth-child(7) { /* Paquetes - MUY PEQUEÑO */
+    .tabla-guias td:nth-child(7) { /* Paquetes  */
         text-align: center !important;
-        font-size: 6pt !important; /* Muy pequeño */
+        font-size: 6pt !important; 
     }
     
     .tabla-guias td:nth-child(8) { /* Fecha */
@@ -864,7 +847,7 @@ select {
         white-space: nowrap !important;
     }
 
-    /* Estados */
+    /* states */
     .estado {
         display: inline-block !important;
         padding: 2px 4px !important;
@@ -890,12 +873,10 @@ select {
         color: black !important;
     }
 
-    /* Alternar colores de filas */
     .tabla-guias tbody tr:nth-child(even) {
         background-color: #f9f9f9 !important;
     }
 
-    /* Manejo de páginas */
     thead {
         display: table-header-group !important;
     }
@@ -904,9 +885,7 @@ select {
         page-break-inside: avoid !important;
     }
 }
-/* =============================================
-   LIGHTBOX / MODAL PARA IMÁGENES
-============================================== */
+/* LIGHTBOX */
 .modal-imagen {
     display: none;
     position: fixed;
@@ -977,7 +956,6 @@ select {
     backdrop-filter: blur(2px);
 }
 
-/* Indicador de clic en imágenes */
 #pVoucher {
     cursor: pointer;
     transition: all 0.3s ease;

@@ -75,6 +75,7 @@ if (isset($_GET['msg'])) {
                         <option value="ACTIVA">Activa</option>
                         <option value="CANCELADA">Cancelada</option>
                         <option value="DEVOLUCION">Devolución</option>
+                        <option value="RECOGIDA">Recogida</option>
                     </select>
                 </div>
 
@@ -128,7 +129,7 @@ if (isset($_GET['msg'])) {
 
                 <div class="form-group">
                     <label>Destinatario:*</label>
-                    <input type="text" name="destinatario" placeholder="Nombre completo" required>
+                    <input type="text" name="destinatario" placeholder="Nombre completo" onkeyup="mayuscula(this);"  required>
                 </div>
 
                 <div class="form-group">
@@ -167,6 +168,8 @@ if (isset($_GET['msg'])) {
                         <option value="ACTIVA">Activa</option>
                         <option value="CANCELADA">Cancelada</option>
                         <option value="DEVOLUCION">Devolución</option>
+                        <option value="RECOGIDA">Recogida</option>
+
                     </select>
                 </div>
             </div>
@@ -421,6 +424,7 @@ if (isset($_GET['msg'])) {
 </div>
 
 <!-- JavaScript files -->
+<script src="js/mayus.js"></script>
 <script src="js/mostrar_ocultar.js"></script>
 <script src="js/auto_tipo_pago.js"></script>
 <script src="js/imprimir.js"></script>

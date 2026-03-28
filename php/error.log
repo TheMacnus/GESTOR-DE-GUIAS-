@@ -1,0 +1,5 @@
+[26-Mar-2026 22:35:36 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to a member function fetch_all() on bool in C:\xampp\htdocs\GESTOR-DE-GUIAS-\php\controller.php:295
+Stack trace:
+#0 C:\xampp\htdocs\GESTOR-DE-GUIAS-\php\controller.php(410): buscarGuias(Array)
+#1 {main}
+  thrown in C:\xampp\htdocs\GESTOR-DE-GUIAS-\php\controller.php on line 295

@@ -109,7 +109,7 @@ if (isset($_GET['msg'])) {
     <!-- ============================================= -->
     <section id="insertar" class="seccion">
         <h2>Insertar Nueva Guía</h2>
-        <form method="POST" action="php/controller.php" class="form-insertar">
+        <form method="POST" action="php/controller.php" class="form-insertar" >
             <input type="hidden" name="accion" value="insertar">
 
             <div class="form-grid">
@@ -124,7 +124,7 @@ if (isset($_GET['msg'])) {
 
                 <div class="form-group">
                     <label>Número de Guía:*</label>
-                    <input type="number" name="numero_guia" placeholder="Ej: 99170147078" required>
+                    <input type="text" name="numero_guia" placeholder="Ej: 99170147078" onblur="procesarGuia()" required>
                 </div>
 
                 <div class="form-group">
@@ -424,6 +424,7 @@ if (isset($_GET['msg'])) {
 </div>
 
 <!-- JavaScript files -->
+<script src="js/guias_rules.js"></script>
 <script src="js/mayus.js"></script>
 <script src="js/mostrar_ocultar.js"></script>
 <script src="js/auto_tipo_pago.js"></script>
